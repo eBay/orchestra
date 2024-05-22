@@ -4,7 +4,7 @@ Workflow Orchestrator provides a functionality to define and run workflows in in
 
 ### Sample Workflow
 
-![diagram](https://media.github.corp.ebay.com/user/35710/files/2f35553e-7476-4dc1-836d-9b9a3b66f5b9)
+![image](https://github.com/eBay/orchestra/assets/78416587/221c0391-719f-4745-b77a-87da0e697b44)
 
 
 ## Getting Started
