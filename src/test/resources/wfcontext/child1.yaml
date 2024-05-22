@@ -1,0 +1,56 @@
+---
+#Comments
+name: Child workflow 1
+version: 1.0
+
+task:
+  simplePrintTask:
+    args:
+      - {argType: String, value: Child yaml -1 - This is print task 1}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 200}
+
+workflow:
+
+  child-1-WF1-RepeatWorkFlow:
+    desc: Child yaml - print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask
+      times: 3
+
+
+  child-1-WF2-ParallelWorkFlow:
+    desc: print tasks in parallel
+    type: parallel
+    parallelWF:
+      timeout: 200
+      executables:
+        simplePrintTask:
+          instanceGenerator: PrintTaskInstanceGenerator
+          elementType: String
+        simpleSleepTask:
+        child-1-WF1-RepeatWorkFlow:
+
+  child-1-WF3-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: child-1-WF2-ParallelWorkFlow
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simpleSleepTask
+
+
+  child-1-WF5-SequentialWorkFlow:
+    desc: main sequential workflow
+    type: sequential
+    sequentialWF:
+      executables: [child-1-WF1-RepeatWorkFlow, child-1-WF3-ConditionalWorkFlow-1]
+
+engine: child-1-WF5-SequentialWorkFlow
+
+#Comments
+...

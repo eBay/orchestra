@@ -1,0 +1,57 @@
+---
+#Comments
+name: sample testing workflow
+version: 1.0
+
+importFiles: [child1.yaml,child2.yaml,child3.yaml]
+
+task:
+
+  parentPrintStartTask:
+    args:
+      - {argType: String, value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+
+  parentPrintTask1:
+    args:
+      - {argType: String, value: This is parent print task 1}
+
+  parentPrintTask2:
+    args:
+      - {argType: String, value: This is parent print task 2}
+
+  parentPrintEndTask:
+    args:
+      - {argType: String, value: This is parent print task to end}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 100}
+
+workflow:
+
+  parent-repeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: parentPrintTask1
+      times: 5
+
+  parent-conditionalWorkFlow:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: parent-repeatWorkFlow
+      thenExecutable: child-1-WF5-SequentialWorkFlow
+      otherwiseExecutable: child-2-WF2-ConditionalWorkFlow-1
+
+  parent-sequentialWorkFlow:
+    desc: main sequential parent workflow
+    type: sequential
+    sequentialWF:
+      executables: [parentPrintStartTask, parent-sequentialWorkFlow, parent-conditionalWorkFlow, parentPrintEndTask,child-3-WF3-ConditionalWorkFlow-1]
+      #executables: [parentPrintStartTask, parent-conditionalWorkFlow, parentPrintEndTask]
+
+engine: parent-sequentialWorkFlow
+
+#Comments
+...

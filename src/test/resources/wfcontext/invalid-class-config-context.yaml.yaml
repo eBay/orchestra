@@ -1,0 +1,61 @@
+w---
+#Comments
+name: sample workflow
+version: 1.0
+
+task:
+  simplePrintTask-String-Invalid:
+    args:
+      - {argType: String, value: This is print task 1}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 100}
+
+workflow:
+
+  WF1-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask
+      times: 3
+
+  WF2-ParallelWorkFlow:
+    desc: print 'world1' and 'world2' and 'world3' in parallel
+    type: parallel
+    parallelWF:
+      executables:
+        simplePrintTask:
+          instanceGenerator: PrintTaskInstanceGenerator
+          elementType: String
+        simpleSleepTask:
+
+  WF3-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: WF2-ParallelWorkFlow
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simplePrintTask
+
+  WF4-ConditionalWorkFlow-2:
+    desc: WF-4
+    type: conditional
+    conditionalWF:
+      executable: WF3-ConditionalWorkFlow-1
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simplePrintTask
+
+  WF5-SequentialWorkFlow:
+    desc: main sequential workflow
+    type: sequential
+    sequentialWF:
+      executables: [simplePrintTask, WF1-RepeatWorkFlow, WF4-ConditionalWorkFlow-2, simpleSleepTask, WF3-ConditionalWorkFlow-1]
+
+engine: WF5-SequentialWorkFlow
+
+#Comments
+...

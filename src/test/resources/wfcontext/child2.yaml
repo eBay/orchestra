@@ -1,0 +1,36 @@
+---
+#Comments
+name: Child workflow 2
+version: 1.0
+
+task:
+  simplePrintTask:
+    args:
+      - {argType: String, value: Child - 2 yaml - This is print task 1}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 200}
+
+workflow:
+
+  child-2-WF1-RepeatWorkFlow:
+    desc: Child yaml - print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask
+      times: 3
+
+  child-2-WF2-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: child-2-WF1-RepeatWorkFlow
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simpleSleepTask
+
+engine: child-2-WF2-ConditionalWorkFlow-1
+
+#Comments
+...

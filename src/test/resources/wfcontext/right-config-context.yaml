@@ -1,0 +1,105 @@
+---
+#Comments
+name: sample workflow
+version: 1.0
+
+task:
+  simplePrintTask-String:
+    args:
+      - {argType: String, value: This is print task 1}
+
+  simplePrintTask-Long:
+    args:
+      - {argType: Long, value: 2}
+
+  simplePrintTask-Double:
+    args:
+      - {argType: Double, value: 3}
+
+  simplePrintTask-Integer:
+    args:
+      - {argType: Integer, value: 4}
+
+  simplePrintTask-Float:
+    args:
+      - {argType: Float, value: 5}
+
+  simplePrintTask-Object:
+    args:
+      - {argType: Object, value: This is print task 6}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 100}
+
+  noOpTask:
+
+  simpleBranchTask:
+
+workflow:
+
+  WF1-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask-String
+      times: 3
+
+  WF2-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask-String
+      times: 1
+
+  WF2-ParallelWorkFlow:
+    desc: print 'world1' and 'world2' and 'world3' in parallel
+    type: parallel
+    parallelWF:
+      timeout: 500
+      executables:
+        simplePrintTask-String:
+          instanceGenerator: PrintTaskInstanceGenerator
+          elementType: String
+        simpleSleepTask:
+        WF2-RepeatWorkFlow:
+
+  WF3-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: WF2-ParallelWorkFlow
+      whenCondition: TODO
+      thenExecutable: simplePrintTask-Long
+      otherwiseExecutable: simplePrintTask-Integer
+
+  WF4-ConditionalWorkFlow-2:
+    desc: WF-4
+    type: conditional
+    conditionalWF:
+      executable: WF3-ConditionalWorkFlow-1
+      whenCondition: TODO
+      thenExecutable: simplePrintTask-Integer
+      otherwiseExecutable: simplePrintTask-Long
+
+  WF5-BranchWorkFlow:
+    desc: Branch workflow
+    type: branch
+    branchWF:
+      executable: simpleBranchTask
+      switchCases:
+        A: simplePrintTask-String
+        B: simplePrintTask-Long
+        C: simplePrintTask-Double
+
+  WF6-SequentialWorkFlow:
+    desc: main sequential workflow
+    async: true
+    type: sequential
+    sequentialWF:
+      executables: [simplePrintTask-Double, WF1-RepeatWorkFlow, WF4-ConditionalWorkFlow-2, simplePrintTask-Float, WF3-ConditionalWorkFlow-1, WF5-BranchWorkFlow]
+
+engine: WF6-SequentialWorkFlow
+
+#Comments
+...

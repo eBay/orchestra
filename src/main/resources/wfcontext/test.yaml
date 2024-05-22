@@ -1,0 +1,100 @@
+---
+#Comments
+name: sample workflow
+version: 1.0
+
+task:
+  Task-1:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      - argType: String
+        value: This is print task 1
+
+  Task-2:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      -
+        argType: String
+        value: This is print task 2
+
+  Task-3:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      -
+        argType: String
+        value: This is print task 3
+
+  Task-4:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      -
+        argType: String
+        value: This is print task 4
+
+  Task-5:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      -
+        argType: String
+        value: This is print task 5
+
+  Task-6:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.PrintMessageTask
+    args:
+      -
+        argType: String
+        value: This is print task 6
+
+  SleepTask.class-1:
+    className: com.ebay.riskmgmt.workfloworchestrator.service.SleepTask
+    args:
+      -
+        argType: Long
+        value: 2000
+
+
+workflow:
+
+  WF1-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      task: Task-1
+      times: 3
+
+  WF2-ParallelWorkFlow:
+    desc: print 'world1' and 'world2' and 'world3' in parallel
+    type: parallel
+    parallelWF:
+      tasks: [Task-2, Task-3, Task-4]
+
+  WF3-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executeTask:
+      executeWorkflow: WF2-ParallelWorkFlow
+      whenCondition: TODO
+      thenDoTask: Task-5
+      otherwiseDoTask: Task-6
+
+  WF4-ConditionalWorkFlow-2:
+    desc: sleep if workflow_2_1 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executeTask:
+      executeWorkflow: WF3-ConditionalWorkFlow-1
+      whenCondition: TODO
+      thenDoTask: SleepTask.class-1
+      otherwiseDoTask: Task-6
+
+  WF5-SequentialWorkFlow:
+    desc: main sequential workflow
+    type: sequential
+    sequentialWF:
+      workFlows: [WF1-RepeatWorkFlow, WF4-ConditionalWorkFlow-2, WF3-ConditionalWorkFlow-1]
+
+engine: WF5-SequentialWorkFlow
+
+#Comments
+...

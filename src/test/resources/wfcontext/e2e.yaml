@@ -1,0 +1,84 @@
+---
+#Comments
+name: sample workflow
+version: 1.0
+
+task:
+  simplePrintTask:
+    args:
+      - {argType: String, value: This is print task 1}
+
+  simpleSleepTask:
+    args:
+      - {argType: long, value: 100}
+
+  simpleBranchTask:
+
+workflow:
+
+  WF1-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask
+      times: 1
+
+  WF2-RepeatWorkFlow:
+    desc: print start 3 Times
+    type: repeat
+    repeatWF:
+      executable: simplePrintTask
+      times: 5
+
+  WF2-ParallelWorkFlow:
+    desc: print 'world1' and 'world2' and 'world3' in parallel
+    type: parallel
+    async: true
+    parallelWF:
+      timeout: 200
+      executables:
+        simplePrintTask:
+          instanceGenerator: PrintTaskInstanceGenerator
+          elementType: String
+        simpleSleepTask:
+        WF1-RepeatWorkFlow:
+
+  WF3-ConditionalWorkFlow-1:
+    desc: print 'ok' if workflow_2_0 succeeds else 'nok'
+    type: conditional
+    conditionalWF:
+      executable: WF2-ParallelWorkFlow
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simplePrintTask
+
+  WF4-ConditionalWorkFlow-2:
+    desc: WF-4
+    type: conditional
+    conditionalWF:
+      executable: WF3-ConditionalWorkFlow-1
+      whenCondition: TODO
+      thenExecutable: simplePrintTask
+      otherwiseExecutable: simplePrintTask
+
+  WF5-BranchWorkFlow:
+    desc: Branch workflow
+    type: branch
+    branchWF:
+        executable: simpleBranchTask
+        switchCases:
+          A: simplePrintTask
+          B: simpleSleepTask
+          C: WF1-RepeatWorkFlow
+
+  WF6-SequentialWorkFlow:
+    desc: main sequential workflow
+    type: sequential
+    async: true
+    sequentialWF:
+      executables: [simplePrintTask, WF1-RepeatWorkFlow, WF4-ConditionalWorkFlow-2, simpleSleepTask, WF3-ConditionalWorkFlow-1, WF5-BranchWorkFlow]
+
+engine: WF6-SequentialWorkFlow
+
+#Comments
+...
